@@ -1,0 +1,21 @@
+---
+- name: install and edit nginx
+  hosts: build
+  become: yes
+
+  tasks:
+  - name: install nginx
+    apt: pkg={{ item }} state=latest update_cache=yes cache_valid_time=3600
+    with_items:
+      - nginx
+
+  - name: edit nginx config
+    lineinfile:
+      path: /usr/share/nginx/html/index.html
+      search_string: 'Welcome to nginx!'
+      line: "<p><script> document.write(new Date().toLocaleDateString()); </script></p>"
+
+  - name: ensure service nginx is started
+    service:
+      name: nginx
+      state: started
